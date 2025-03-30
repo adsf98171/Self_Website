@@ -1,0 +1,909 @@
+/* 基本樣式設定 */
+:root {
+    --primary-color: #1a1a1a;
+    --secondary-color: #3498db;
+    --text-color: #ffffff;
+    --background-color: #121212;
+    --card-background: #1e1e1e;
+    --section-padding: 80px 0;
+    --transition-speed: 0.3s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.flex-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.experience {
+    width: 70%; /* 設置為 70% 寬度 */
+    padding: 1px; /* 可選：添加內邊距以增加可讀性 */
+}
+
+.skills {
+    width: 50%; /* 設置為 30% 寬度 */
+    padding: 10px; /* 可選：添加內邊距以增加可讀性 */
+}
+
+.portfolio {
+    width: 50%; /* 設置為 30% 寬度 */
+    padding: 10px; /* 可選：添加內邊距以增加可讀性 */
+}
+
+@media (max-width: 768px) {
+.flex-container {
+flex-direction: column; /* 在小螢幕上改為垂直顯示 */
+  }
+
+.experience, .skills {
+width: 100%; /* 100% 寬度 */
+  }
+}
+
+#particles-js {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    background: 5bc0de ;/* 背景色可以更改 */
+}
+
+/* 導航欄樣式 */
+.header {
+    background-color: rgba(26, 26, 26, 0.95);
+    padding: 20px 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    transition: transform var(--transition-speed) ease-in-out;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+}
+
+nav ul li {
+    margin: 0 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+
+nav ul li a:hover {
+    color: var(--secondary-color);
+}
+
+
+/* 連結顏色 */
+a {
+    color: #5bc0de; /* 水藍色 */
+    text-decoration: none; /* 去掉底線 */
+}
+
+a:hover {
+    color: #3498db; /* 滑鼠懸停時變深藍色 */
+}
+
+/* h3顏色與大小 */
+
+h3 {
+  color: orange;
+  font-size: 20px;
+}
+
+
+/* 章節共用樣式 */
+.section {
+    padding: var(--section-padding);
+    margin-top: 60px;
+}
+
+.section h1, .section h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    color: var(--text-color);
+}
+
+/* 個人資料區塊 */
+.profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 40px;
+}
+
+.avatar {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-content {
+    max-width: 500px;
+}
+
+.profile-content h2 {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.profile-content h3 {
+    color: var(--secondary-color);
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.profile-content h4 {
+    color: var(--secondary-color);
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.no-wrap {
+    white-space: nowrap; /* 防止換行 */
+}
+
+/* 時間軸樣式 */
+.timeline {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 90%; /*藍線位置*/
+    transform: translateX(-50%);
+    width: 2px;
+    height: 120%;
+    background-color: var(--secondary-color);
+}
+
+.timeline-item {
+    padding: 20px 0;
+    position: relative;
+    margin-bottom: 30px;
+    width: 90%; /*工作經驗欄位寬度*/
+}
+
+.timeline-item:nth-child(odd) {
+    left: 0;
+    padding-right: 40px;
+}
+
+.timeline-item:nth-child(even) {
+    left: 50%;
+    padding-left: 40px;
+}
+
+.timeline-date {
+    font-weight: bold;
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+}
+
+.timeline-content {
+    background: var(--card-background);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    transition: transform var(--transition-speed);
+}
+
+.timeline-content:hover {
+    transform: translateY(-5px);
+}
+
+/* 技能區塊樣式 */
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.skill-item {
+    background: var(--card-background);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.skill-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.skill-title {
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.skill-bar {
+    background-color: #333;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.skill-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--secondary-color), #2ecc71);
+    width: 0;
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.skill-progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.1) 100%);
+}
+
+
+/* 聯絡資訊樣式 */
+.contact-info {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-top: 40px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: var(--card-background);
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.contact-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.contact-item i {
+    font-size: 28px;
+    color: var(--secondary-color);
+    transition: transform var(--transition-speed);
+}
+
+.contact-item:hover i {
+    transform: scale(1.2);
+}
+
+.contact-item p {
+    font-size: 1.1em;
+    color: var(--text-color);
+}
+
+/* 頁尾樣式 */
+.footer {
+    background-color: var(--primary-color);
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .profile {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+
+    .profile-content {
+        padding: 0 20px;
+    }
+
+    .timeline::before {
+        left: 20px;
+    }
+
+    .timeline-item {
+        width: 100%;
+        padding-left: 50px;
+    }
+
+    .timeline-item:nth-child(even) {
+        left: 0;
+    }
+
+    .skills-grid {
+        grid-template-columns: 1fr;
+        padding: 0 15px;
+    }
+
+    .contact-info {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0 20px;
+    }
+
+    .contact-item {
+        margin: 0 15px;
+    }
+
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px 0;
+    }
+
+    nav ul li {
+        margin: 8px 0;
+    }
+
+    .section {
+        padding: var(--section-padding) 15px;
+    }
+
+    .header {
+        padding: 15px 0;
+    }
+
+    .project-details {
+        width: 95%;
+        max-height: 90vh;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) !important;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .project-header {
+        padding: 15px;
+    }
+
+    .close-button {
+        top: 10px;
+        right: 10px;
+    }
+
+    .detail-section {
+        padding: 10px;
+    }
+
+    .project-card {
+        margin: 15px 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .project-header {
+        padding: 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .project-header h3 {
+        font-size: 1.1em;
+        padding-right: 30px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .project-summary {
+        padding-right: 30px;
+        margin: 8px 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .project-card.active .project-details {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+        position: relative;
+        left: 0;
+        transform: none !important;
+    }
+
+    .detail-section {
+        width: 100%;
+        margin: 0 0 15px 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .detail-section h4 {
+        width: 100%;
+        margin: 0 0 10px 0;
+        padding: 0;
+        font-size: 1em;
+    }
+
+    .detail-section ul {
+        width: 100%;
+        padding: 0 0 0 20px;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .detail-section ul li {
+        width: 100%;
+        padding: 0 0 0 15px;
+        margin: 8px 0;
+        font-size: 0.9em;
+        line-height: 1.4;
+        box-sizing: border-box;
+        word-wrap: break-word;
+        position: relative;
+    }
+
+    .project-details,
+    .project-card.active .project-details {
+        position: static;
+        top: auto;
+        left: auto;
+        transform: none !important;
+        max-height: none;
+    }
+
+    .timeline-content {
+        padding: 15px;
+        width: 100%;
+    }
+
+    .timeline-item {
+        padding-left: 40px;
+        width: 100%;
+    }
+}
+
+.project-card {
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--card-background);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s;
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+}
+
+.project-header {
+    padding: 20px;
+    background: var(--card-background);
+    border-left: 5px solid var(--secondary-color);
+    cursor: pointer;
+    position: relative;
+}
+
+.project-header h3 {
+    color: var(--text-color);
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+.project-summary {
+    color: #888;
+    font-size: 0.95em;
+    margin: 10px 0;
+    padding-right: 30px;
+}
+
+/* 修改 project-details 的樣式 */
+.project-details {
+    display: none;  /* 改用 display 來控制顯示/隱藏 */
+    background: var(--card-background);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0 20px;  /* 預設有水平內邊距 */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* 活動狀態的樣式 */
+.project-card.active .project-details {
+    display: block;
+    opacity: 1;
+    padding: 20px;
+}
+
+/* 移除不需要的動畫類別 */
+.project-details.active {
+    animation: none;
+}
+
+/* 修改展開圖標的動畫 */
+.expand-icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease;
+    color: var(--text-color);
+    font-size: 24px;
+}
+
+.project-card.active .expand-icon {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.detail-section {
+    margin: 0 0 20px 0;
+    width: 100%;
+}
+
+.detail-section h4 {
+    margin: 0 0 15px 0;
+    padding: 0;
+    color: var(--text-color);
+}
+
+.detail-section ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0 0 0 20px;
+    width: 100%;
+}
+
+.detail-section ul li {
+    margin: 8px 0;
+    position: relative;
+    padding: 0 0 0 20px;
+    color: var(--text-color);
+}
+
+.detail-section ul li:before {
+    content: "•";
+    color: var(--secondary-color);
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* 添加遮罩層 */
+.modal-overlay {
+    display: none;
+}
+
+/* 關閉按鈕 */
+.close-button {
+    display: none;
+}
+
+/* 動畫效果 */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+.project-details.active {
+    animation: slideIn 0.3s ease-out forwards;
+    pointer-events: all;
+}
+
+.modal-overlay.active {
+    pointer-events: all;
+}
+
+/* 添加新的樣式來防止閃爍 */
+.modal-active {
+    overflow: hidden;
+}
+
+/* 添加動態背景效果 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        rgba(52, 152, 219, 0.05),
+        rgba(41, 128, 185, 0.05)
+    );
+    z-index: -1;
+}
+
+/* 添加動態波浪背景 */
+.wave-background {
+    position: fixed;
+    bottom: 0; /* 將波浪背景固定在底部 */
+    right: 0; /* 將波浪背景固定在右側 */
+    width: 50%; /* 調整寬度，例如 50% */
+    height: 50%; /* 調整高度，例如 50% */
+    z-index: -2;
+    opacity: 0.2;
+}
+
+.wave {
+    position: absolute;
+    width: 200%; /* 調整波浪寬度，使其能覆蓋背景 */
+    height: 200%; /* 調整波浪高度 */
+    background: linear-gradient(
+        45deg,
+        rgba(52, 152, 219, 0.2),
+        rgba(41, 128, 185, 0.2),
+        rgba(52, 73, 94, 0.2)
+    );
+    animation: wave 15s linear infinite;
+    bottom: 0; /* 確保波浪位置在底部 */
+    right: 0; /* 確保波浪位置在右側 */
+}
+
+.wave:nth-child(2) {
+    animation-delay: -5s;
+    opacity: 0.3;
+}
+
+.wave:nth-child(3) {
+    animation-delay: -10s;
+    opacity: 0.2;
+}
+
+@keyframes wave {
+    0% {
+        transform: translate(0, 0) rotate(0deg); /* 不再需要移動 */
+    }
+    100% {
+        transform: translate(0, 0) rotate(360deg); /* 不再需要移動 */
+    }
+}
+
+/* 添加浮動粒子效果 */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -3;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute; /* 確保粒子能夠自由定位 */
+    width: 5px; /* 粒子的寬度 */
+    height: 5px; /* 粒子的高度 */
+    background-color: rgba(52, 152, 219, 0.7); /* 水藍色 */
+    border-radius: 50%; /* 使粒子圓形 */
+    animation: float 20s infinite; /* 添加浮動動畫 */
+    opacity: 0.8; /* 粒子的透明度 */
+}
+
+/* 手機版特別處理 */
+@media (max-width: 768px) {
+    .project-card {
+        margin: 15px 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .project-header {
+        padding: 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .project-header h3 {
+        font-size: 1.1em;
+        padding-right: 30px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .project-summary {
+        padding-right: 30px;
+        margin: 8px 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .project-details {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+        position: relative;
+        left: 0;
+        transform: none !important;
+    }
+
+    .project-card.active .project-details {
+        padding: 15px;
+        width: 100%;
+        position: relative;
+        left: 0;
+        transform: none !important;
+    }
+
+    .detail-section {
+        width: 100%;
+        margin: 0 0 15px 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .detail-section h4 {
+        width: 100%;
+        margin: 0 0 10px 0;
+        padding: 0;
+        font-size: 1em;
+    }
+
+    .detail-section ul {
+        width: 100%;
+        padding: 0 0 0 20px;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .detail-section ul li {
+        width: 100%;
+        padding: 0 0 0 15px;
+        margin: 8px 0;
+        font-size: 0.9em;
+        line-height: 1.4;
+        box-sizing: border-box;
+        word-wrap: break-word;
+        position: relative;
+    }
+
+    .project-details,
+    .project-card.active .project-details {
+        position: static;
+        top: auto;
+        left: auto;
+        transform: none !important;
+        max-height: none;
+    }
+
+    .timeline-content {
+        padding: 15px;
+        width: 100%;
+    }
+
+    .timeline-item {
+        padding-left: 40px;
+        width: 100%;
+    }
+}
+
+/* 控制專案卡片中圖片的大小 */
+    .project-card img {
+        width: 200%; /* 使圖片寬度填滿父容器 */
+        max-width: 400px; /* 設置圖片的最大寬度 */
+        height: auto; /* 使圖片高度自動調整，保持比例 */
+    }
+
+/* 留言板樣式 */
+.message-form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background: var(--card-background);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.message-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: var(--text-color);
+    font-size: 0.95em;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-color);
+    font-size: 1em;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.submit-btn {
+    padding: 12px 24px;
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    align-self: flex-start;
+}
+
+.submit-btn:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+/* 手機版適配 */
+@media (max-width: 768px) {
+    .message-form-container {
+        padding: 15px;
+        margin: 0 15px;
+    }
+
+    .submit-btn {
+        width: 100%;
+        align-self: center;
+    }
+}

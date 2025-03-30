@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>房價預測模型詳解</title>
+    <link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+	<canvas id="meteorCanvas"></canvas>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="wave-background">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+    <div class="particles" id="particles"></div>
+	
+    <header class="header">
+        <h1 style="text-align: center;">房價預測模型詳解</h1>
+    </header>
+
+    <div class="container">
+        <section>
+            <h2>專案背景</h2>
+            <p>在這個專案中，我們使用了多種機器學習算法來預測房價，包括 Simple Regression、Random Forest 和 XGBoost。最終，我們利用 DNN 進一步提升預測的準確性。</p>
+            
+            <h2>數據集介紹</h2>
+            <p>使用的數據集包含多個特徵，如地點、房間數、建築年份等，這些特徵對房價有顯著影響。</p>
+            
+            <h2>模型評估</h2>
+            <p>我們使用 SHAP 值來增加模型的解釋能力，這使得我們可以了解每個特徵對預測結果的貢獻。</p>
+
+            <h2>結論</h2>
+            <p>透過這個專案，我們展示了如何結合多種機器學習技術來解決房價預測的問題，並提高了模型的解釋能力。</p>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 個人作品集. All rights reserved.</p>
+        </div>
+    </footer>
+	
+	<script src="script.js"></script>
+</body>
+</html>

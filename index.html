@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>劉丞祐 - AI工程師 | 機器學習與數據分析作品集</title> 
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="wave-background">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+    <div class="particles" id="particles"></div>
+
+    <header class="header">
+ <!--   	    <h1 style="text-align: center;">劉丞祐 - AI工程師 | 機器學習與數據分析</h1>-->
+		<br>
+        <div class="container">
+            <nav>
+                <ul>
+                    <li><a href="#about">關於我</a></li>
+                    <li><a href="#experience">工作經歷</a></li>
+                    <li><a href="#skills">專業技能</a></li>
+					<li><a href="#portfolio">作品集</a></li>
+                    <li><a href="#contact">聯絡資訊</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <br>
+    <section id="about" class="section">
+        <div class="container">
+            <h1>關於我</h1>
+            <div class="profile">
+                <div class="profile-image">
+                    <img src="./images/picture.jpg" alt="劉丞祐的個人照片" class="avatar">
+                </div>
+                <div class="profile-content">
+                    <h2>劉丞祐</h2>
+                    <h3>經歷</h3>
+                    <p class="no-wrap">1.具有大數據統計分析、機器學習、影像辨識、大型語言模型開發與微調能力,</p>
+					<p>2.擁有網頁系統開發、撰寫與建立的經驗。</p>
+
+					<h4>學歷</h4>
+					<p> 國立中正大學 數學系 、 統計科學研究所 畢業。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<section id="experience-skills" class="section">
+    <div class="container">
+        <div class="flex-container">
+            <div class="experience">
+                <div class="timeline">
+                    <div class="timeline-item">
+					    <h2>工作經歷</h2>
+                        <div class="timeline-date">2024/08 - 2025/01</div>
+                        <div class="timeline-content">
+                            <h3>智慧製造工程師</h3>
+                            <h4>友達光電科技股份有限公司</h4>
+
+                            <!-- 系統一 -->
+                            <div class="project-card">
+                                <div class="project-header" onclick="toggleProject('erp-system')">
+                                    <h3>【產線資料獲取、基礎數據分析與可視化系統】</h3>
+                                    <p class="project-summary">協助產線人員方便撈取機台 | 即時更新資料 | 基礎統計量表、點位散佈圖與管制圖輸出。</p>
+									<p class="project-summary">(PS.可點開右邊符號)</p>
+                                    <span class="expand-icon">+</span>
+                                </div>
+                                <div class="project-details" id="erp-system">
+                                    <div class="detail-section">
+                                        <h4>系統效益</h4>
+                                        <ul>
+                                            <li>工作效率提升 50%</li>
+                                            <li>資料完整度達 80%</li>
+                                            <li>即時監控儀表板</li>
+                                        </ul>
+                                    </div>
+                                    <div class="detail-section">
+                                        <h4>技術實現</h4>
+                                        <ul>
+                                            <li>自動化機台資料撈取與追蹤</li>
+                                            <li>系統整合與資料同步</li>
+                                            <li>報表分析</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p>1. 結合統計分析與即時資料庫撈取資料，減少人工撈取與套圖等複雜動作</p>
+                            <p>2. 針對輸出的統計量表與管制圖，提供機台調整參數，更好的建議</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="skills">
+                <h2>專業技能</h2>
+<!--                <p>擁有數據分析與機器學習、系統開發與優化的能力，應用於AI與大數據相關領域。</p> -->
+
+                <h3>程式設計</h3>
+                <ul class="skills-list">
+                    <li>演算法</li>
+                    <li>資料結構</li>
+                </ul>
+				
+				<br>
+
+                <h3>數據分析與統計</h3>
+                <ul class="skills-list">
+                    <li>數理統計、無母數統計、實驗設計</li>
+                    <li>多變量分析、迴歸分析、存活分析</li>
+                    <li>抽樣調查、計算統計</li>
+                </ul>
+				
+				<br>
+
+                <h3>機器學習與深度學習</h3>
+                <ul class="skills-list">
+                    <li>機器學習模型開發與評估</li>
+                    <li>深度學習（CNN、LSTM、Transformer）</li>
+					<li>強化學習（DQN）</li>
+                    <li>大型語言模型 (LLM) 開發與微調</li>
+                </ul>
+				
+				<br>
+
+                <h3>程式開發與系統建置</h3>
+                <ul class="skills-list">
+				    <li>C++</li>
+                    <li>Python (Scikit-Learn、PyTorch、TensorFlow)</li>
+                    <li>Web 開發 (Flask、FastAPI)</li>
+                    <li>資料庫 (MySQL、SQL Server)、自動化數據處理</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+    <section id="skills" class="section">
+        <div class="container">
+            <h2> 相關學科技能(以大學、研究所成績為標準)</h2>
+            <div class="skills-grid">
+                <div class="skill-item">資訊數學專題(演算法)(80)</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="80"></div>
+                    </div>
+                <div class="skill-item">數理統計(86/93)</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="89.5"></div>
+                    </div>
+			
+                <div class="skill-item">多變量分析(71/90)</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="80.5"></div>
+                    </div>
+	
+                <div class="skill-item">機器學習(98)</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="98"></div>
+                    </div>
+		
+                <div class="skill-item">深度學習(92)</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="92"></div>
+                    </div>
+	
+                <div class="skill-item">無母數統計(80)</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="80"></div>
+                    </div>
+	
+                <div class="skill-item">實驗設計(80)</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="80"></div>
+                    </div>
+		
+                <div class="skill-item">抽樣調查(77)</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="77"></div>
+                    </div>
+	
+                <div class="skill-item">存活分析(86)</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="86"></div>
+                    </div>
+		
+                <div class="skill-item">計算統計(演算法)(87)</div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" data-progress="87"></div>
+                    </div>
+			</div>
+	</section>
+			
+	<section id="portfolio" class="section">
+        <div class="container">
+            <h2>作品集</h2>
+            <div class="portfolio-grid">
+            <!-- 專案 1 -->
+                <div class="project-card">
+                    <img src="images/boston.jpg" alt="專案 1 圖片">
+                    <h3>房價預測模型</h3>
+<!--					<h3 style="color: darkblue;">房價預測模型</h3> -->
+                    <p>使用 Simple Regression、 Random Forest、 XGBoost 預測房價，最後使用DNN(深度神經網絡)進一步提升預測能力，並以shap增加解釋能力。</p>
+                    <a href="https://github.com/adsf98171/Portfolio/blob/main/boston_house_prediction.ipynb" target="_blank">查看程式碼</a>
+					<br> <!-- 加入一個換行 -->
+                    <a href="project_explanation_1.html" target="_blank">查看詳細解釋</a>
+                </div>
+				
+				<!-- 專案 2 -->
+                <div class="project-card">
+                    <img src="images/titanic.jpg" alt="專案 2 圖片">
+                    <h3>鐵達尼存活預測</h3>
+                    <p>使用 logistic Regression、 Random Forest、 XGBoost 預測是否存活，最後使用DNN(深度神經網絡)看看是否能增加分類能力。</p>
+                    <a href="https://github.com/adsf98171/Portfolio/blob/main/Titanic_prediction.ipynb" target="_blank">查看程式碼</a>
+					<br> <!-- 加入一個換行 -->
+                    <a href="project_explanation_2.html" target="_blank">查看詳細解釋</a>
+                </div>
+
+            <!-- 專案 3 -->
+                <div class="project-card">
+                    <img src="images/project3.jpg" alt="專案 3 圖片">
+                    <h3>工廠數據分析儀表板</h3>
+                    <p>開發一個基於 Flask 的網頁應用，讓產線即時監測機台數據。</p>
+                    <a href="https://github.com/你的GitHub帳號/工廠儀表板" target="_blank">查看程式碼</a>
+                </div>
+
+            <!-- 專案 3 -->
+                <div class="project-card">
+                    <img src="images/project3.jpg" alt="專案 3 圖片">
+                    <h3>Chatbot 智能對話系統</h3>
+                    <p>微調大型語言模型 (LLM)，開發具備自動回應功能的聊天機器人。</p>
+                    <a href="https://github.com/你的GitHub帳號/聊天機器人" target="_blank">查看程式碼</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <section id="contact" class="section">
+        <div class="container">
+            <h2>聯絡資訊</h2>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <p>l960908@gmail.com</p>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <p>+886 983-276-932</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="message" class="section">
+        <div class="container">
+            <h2>留言板</h2>
+            <div class="message-form-container">
+                <form action="https://formspree.io/f/您的formspree代碼" method="POST" class="message-form">
+                    <div class="form-group">
+                        <label for="name">姓名</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">留言內容</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">送出留言</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 個人作品集. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
