@@ -51,7 +51,21 @@
 			<br>
 			
             <h3>模型評估</h3>
-            <p>最終以DNN(深度神經網路)勝出，為了增加解釋性，使用 Shap method 提供更多訊息。以結果來說，影響房價最大的有:</p>
+            <p>最終DNN(深度神經網路)以 91% 的 R square 勝出，為了增加解釋性，使用 Shap method 提供更多訊息。</p>
+			<br>
+			
+			<figure>
+			<img src="images/p3.png" alt="MAE Loss" width="300" height="300">
+ 			<figcaption>MAE Loss</figcaption>
+			</figure>
+			<br>
+			
+			<ul>
+			<li>這個 MAE Plot 可以知道模型的loss收斂的速度與是否收斂完成，以及模型是否有震盪(不穩定)、overfit、underfit等訊息，也可以知道真實值與預測值的差異。</li>
+			</ul>
+            <br>
+			
+			<h4><strong>以結果來說，影響房價最大的有: (全域)</strong></h4>
 			<br>
 			
 			<h4><strong>正相關:</strong></h4>
@@ -70,11 +84,27 @@
 			</figure>
 			<br>
 			
+			<h4><strong>不同特徵對模型預測結果的貢獻程度: (局部)</strong></h4>
+			<br>
+			<ul>
+	            <li>從起始預測值(E[f(x)])開始，逐步加上或減去各個特徵的影響，最終預測值= E[f(X)] + ∑各特徵貢獻，左側的值是X_test第一筆data的特徵值，右側是該特徵對預測的「淨影響」，也就是X_test第一筆data的增加值(也就是shap value)；
+                    所以"最終預測值就是起始預測值(E[f(x)])加上所有特徵的 SHAP 值（右側數字）"，這就是 SHAP 方法的「可加性公理」。</li>
+				<br>
+				<li>這有點像回歸的 b0 + b1x1 +...，但沒辦法處理非線性和交乘項；但對非線性的模型（如隨機森林、XGBoost），SHAP 仍能保持可加性，且分配交互作用的貢獻。</li>
+			</ul>
+			<br>
+			
+			<figure>
+			    <img src="images/p2.png" alt="WaterFall Plot" width="300" height="350">
+ 			   <figcaption>WaterFall Plot</figcaption>
+			</figure>
+			<br>
+			
 			<p>如果我們想討論一些特徵之間的關聯，比如: 用新舊產品、評價與促銷，預測銷售量，可能不好用線性回歸解釋，因為新的產品跟舊的不能相提並論，反而用KNN去找新產品與哪個舊產品最相似，這會比較合理；相似度的演算法也可以使用隨機森林和XGB這種樹方法；在樣本大、特徵多的情況，XGB或DNN+shap value更適合。<p>
             <br>
 			
             <h3>結論</h3>
-            <p>透過這個專案，我們展示了如何結合多種機器學習技術來解決房價預測的問題，並提高了模型的解釋能力。</p>
+            <p>這個專案結果，我們展示了如何結合多種機器學習技術來解決房價預測的問題，最終以一個簡單的DNN Model，91%的R square獲勝，並藉由計算 shap value，以 Summary Plot 與 WaterFall Plot 提供視覺化，提高了模型的解釋能力。</p>
         </section>
     </div>
 
