@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>房價預測模型詳解</title>
+    <title>鐵達尼號生存預測模型詳解</title>
     <link rel="stylesheet" href="style.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 	<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
@@ -19,22 +19,79 @@
     <div class="particles" id="particles"></div>
 	
     <header class="header">
-        <h1 style="text-align: center;">房價預測模型詳解</h1>
+        <h1 style="text-align: center;">鐵達尼號生存預測模型詳解</h1>
     </header>
 
     <div class="container">
         <section>
-            <h2>專案背景</h2>
-            <p>在這個專案中，我們使用了多種機器學習算法來預測房價，包括 Simple Regression、Random Forest 和 XGBoost。最終，我們利用 DNN 進一步提升預測的準確性。</p>
+            <h3>專案背景</h3>
+            <p>在這個專案中，使用了多種機器學習算法來預測房價，包括 Logistic Regression、Random Forest 和 XGBoost 分類樹。最終，我們利用 DNN 嘗試提升預測的準確性。</p>
+            <br>
+            <h3>數據集介紹</h3>
+            <p>使用的數據集的特徵有 11 個，891 筆樣本，經過特徵工程，採用以下特徵:</p>
+			<br>
+			
+			<h4>特徵類別:</h4>
+            <ul>
+                <li><strong>1. 性別:</strong> Sex</li>
+                <li><strong>2. 性別與艙等:</strong> Sex_Pclass </li>
+                <li><strong>3. 稱謂:</strong> Title </li>
+				<li><strong>4. 年紀取log:</strong> log_Age </li>
+                <li><strong>5. 票價取log:</strong> log_Fare </li>
+                <li><strong>6. 住的區域:</strong> Ticket_info </li>
+				<br>
+            </ul>
+			<p>前處理後，用以上6個特徵，712筆train data、179筆test data進行modeling。</p>
+            <br>
             
-            <h2>數據集介紹</h2>
-            <p>使用的數據集包含多個特徵，如地點、房間數、建築年份等，這些特徵對房價有顯著影響。</p>
-            
-            <h2>模型評估</h2>
-            <p>我們使用 SHAP 值來增加模型的解釋能力，這使得我們可以了解每個特徵對預測結果的貢獻。</p>
+            <h3>模型評估</h3>
+            <p>XGBoost 在這裡是最好的模型，accuracy 與 F1-score 都是89%，AUC來到90%，且模型沒有特別明顯的偏好。</p>
+            <br>
+			
+            <div style="display: flex; justify-content: center; gap: 100px; align-items: center;"> <!-- display: flex; 讓兩個 <figure> 並排顯示，justify-content: center; 讓圖片在水平方向置中，gap: 100px; 設定兩張圖片之間的間距 -->
+                <figure>
+                    <img src="images/p4.png" alt="confusion matrix" width="500" height="350">
+                    <figcaption style="text-align: center;">Confusion Matrix</figcaption> <!--align-items: center; 確保圖片在垂直方向對齊，text-align: center; 讓 figcaption 文字置中 -->
+                </figure>
+    
+                <figure>
+                    <img src="images/p5.png" alt="ROC AUC" width="500" height="350">
+                    <figcaption style="text-align: center;">ROC AUC curve</figcaption>
+            </div>
+			<br>
+			<p>通常，只要模型沒有太大的偏好(0分的好、但1分得不好)這種情況，或者特殊需求，accuracy和F1-score大致能決定一個模型分類能力的好壞。</p>
+			<br>
+			
+			<h4>ROC curve和計算AUC(藍線以下的面積):</h4>
+			<ul>
+                <li>1. 幫助我們尋找最佳分類門檻值，而不是預設的0.5； </li>
+                <li>2. 比較不同模型間的分類能力。 </li>
+				<br>
+            </ul>
+			
+			<figure>
+			<img src="images/p7.png" alt="feature importance" width="500" height="350">
+ 			<figcaption>Feature Importance</figcaption>
+			</figure>
+			
+			<h4>解釋特徵重要性:</h4>
+			<ul>
+                <li>1. 以結果來說，影響是否存活最大的特徵有: Sex(性別)、 (性別與艙等)。</li>
+                <li>2. 在線性回歸中，這兩個明顯有多重共線性，可以只取一個，或者用Ridge、Lasso縮小其中一個的影響；</li>
+                <li>3. 在隨機森林與XGB這種樹方法，同時放入2個，可讓模型自行選擇哪個訊息增益較大的特徵。</li>
+                <li>4. 這裡特徵本就不多，多放一點交互作用項，有助於提升分類能力。</li>
+				<br>
+            </ul>
+			
 
-            <h2>結論</h2>
-            <p>透過這個專案，我們展示了如何結合多種機器學習技術來解決房價預測的問題，並提高了模型的解釋能力。</p>
+            <h3>結論</h3>
+            <p>這個專案，最後使用DNN結果並不會比較好，我想是data size太小，通常5000筆以下的問題DNN難以超越XG Boost，以結果來看cross entropy loss到0.5就幾乎平坦，不再下降，明顯是underfit。</p>
+			<br>
+			<figure>
+			<img src="images/p6.png" alt="cross entropy loss" width="500" height="350">
+ 			<figcaption>Cross Entropy Loss</figcaption>
+			</figure>
+			
         </section>
     </div>
 
