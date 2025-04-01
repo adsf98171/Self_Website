@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fine-Tune GPT</title>
+    <link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+	<canvas id="meteorCanvas"></canvas>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="wave-background">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+    <div class="particles" id="particles"></div>
+	
+    <header class="header">
+        <h1 style="text-align: center;">Fine-Tune GPT 詳解</h1>
+    </header>
+
+    <div class="container">
+        <section>
+            <h3>專案背景</h3>
+            <p>在這個專案中，使用transformer進行GPT-2的微調，讓它能夠精準整理並回答我準備的問答資料。這裡是以Google Colab的T4 GPU執行運算，並再Drive中保存模型，以利未來修改。</p>
+            <br>
+			
+            <h3>數據集介紹</h3>
+            <p>我使用80個有關統計與機器學習的問答資料集，例如:</p>
+            <br>
+            <ul>
+                <h4><strong>1. Q: "What is linear regression?" :</strong></h4>
+				<br>
+				<li>A: "Linear regression is a statistical method used to model the linear relationship between independent variables (X) and dependent variables (Y). Its basic form is Y = β₀ + β₁X + ε, where β₀ is the intercept, β₁ is the slope, and ε is the error term."</li>
+                <br>
+				<h4><strong>2. Q: "Explain the gradient descent algorithm?" :</strong></h4>
+				<br>
+				<li>A: "Gradient descent is an optimization algorithm used to find the minimum of a function. It iteratively updates parameters by computing the gradient of the loss function and moving in the negative gradient direction. The learning rate controls the size of each update step."</li>
+            </ul>
+            <br>
+			
+			<h4>我們的目的是，嘗試訓練(微調)一個專業的GPT，可以回答專業的統計與機器學習的問題。</h4>
+			<br>
+			
+			<h3>模型建立</h3>
+			<br>
+			<h4>以下是fine-tune的步驟:</h4>
+			<br>
+            <ul>
+                <li>1. 保存與加載數據(json)，</li>
+				<br>
+				<li>2. 訓練集和測試集進行tokenization，</li>
+                <br>
+				<li>3. 檢查模型設置是否ok? 例如: feedforward、快速檢驗配置，並進行快速驗證，顯示結果；如果快速驗證loss很高：檢查tokenization後的樣本，</li>
+				<br>
+				<li>4. 確認cuda(GPU)，</li>
+				<br>
+				<li>5. 確認test data的loss，</li>
+				<br>
+				<li>6. 設置正式訓練的參數(training_args)，</li>
+				<br>
+				<li>7. 創建Trainer，訓練完整數據集，開始訓練，</li>
+				<br>
+				<li>8. 保存模型，</li>
+				<br>
+				<li>9. 觀察eval_loss，繪製loss曲線，</li>
+				<br>
+				<li>10. 測試模型生成。</li>
+				<br>
+            </ul>
+            <br>
+			
+            <h3>模型評估</h3>
+            <p>我進行10個epochs，以下是train與test的loss，</p>
+			<br>
+			
+			<figure>
+			<img src="images/p8.png" alt="Cross Entropy Loss" width="450" height="300">
+ 			<figcaption>Cross Entropy Loss</figcaption>
+			</figure>
+			<br>
+			
+			<h4>解釋:</h4>
+			<br>
+			<ul>
+			<li>這個 Cross Entropy Loss 可以知道模型的loss收斂是平穩地下降，但6之後下降速度變慢，8之後loss有一點點上升，並且有輕微的overfit，這點從train和test的Gap的差異就看得出來，以平坦程度來看，loss收斂也不完全，epoch應該可以再多。</li>
+			</ul>
+            <br>
+			
+			<h4>問題與處理方案:</h4>
+			<ul>
+			    <li>1. 後期收斂不足(6之後):</li>
+			    <ul>
+			        <li>學習率過高，導致收斂不好(像是一個點在最佳解旁邊繞)。</li>
+			    </ul>
+			<br>
+			    <li>2. 稍微overfit(8之後):</li>
+				    <ul>
+			            <li>在eval loss > train loss + 0.3就應該出手調整。</li>
+					</ul>
+			</ul>
+			<br>
+			
+			<h3>生成答句</h3>
+			<ul>
+                <h4>Input: </h4>
+				<ul>
+				    <li>What is linear regression?</li>
+				</ul>
+				<br>
+				<h4>Output: </h4>
+				<ul>
+				    <li>Answer: Linear regression is the method for estimating linear trends in the mean of continuous data (logarithmistic regression). Linear regression is based on the idea that there is a continuous variable and an error term. For linear regression, the error term is a function of the number of continuous variables. For logarithmic regression, the error term is the difference between the mean squared and the error term.</li>
+				</ul>
+            </ul>
+			<br>
+			<h3>檢查回答內容</h3>
+			<ul>
+	            <li>其實回答內容還不錯，但有些錯誤，如下:</li>
+				<br>
+				<h4>1. logarithmistic regression(log linear regression)，但這裡是問linear regression；</h4>
+				<br>
+				<h4>2. 這句:"error term is a function of the number of continuous variables."，不對，error是獨立的隨機變數，且ε ~ N(0,σ²)；</h4>
+				<br>
+				<h4>3. error term不是mean squared and error term(MSE)，應該是:residual sum of squares(RSS)。</h4>
+				<br>
+			</ul>
+			<br>
+			
+			<h3>改進方案</h3>
+			<p>1. 多加一點<strong>"錯誤 vs 正確"</strong>的對照版本在文本中，比如:</p>
+			<br>
+			<ul>
+				<ul>
+				<h4>QA </h4>
+			        <li><strong>Input:</strong></li>
+				    <ul>
+				        <li>"Linear regression's error term depends on variable count".</li>
+				    </ul>
+				    <br>
+				    <li><strong>Output:</strong></li>
+				    <ul>
+				        <li>"INCORRECT. Error term ε is independent noise. CORRECT: ε ~ N(0,σ²)".</li>
+				    </ul>
+				</ul>
+				<br>
+				<ul>
+				<h4>QA </h4>
+			        <li><strong>Input:</strong></li>
+			    	<ul>
+				        <li>"Logarithmistic regression".</li>
+				    </ul>
+				    <br>
+				    <li><strong>Output:</strong></li>
+				    <ul>
+				        <li>"INCORRECT. Use 'logistic regression' for classification; and 'log-linear regression' for exponential relationships".</li>
+				    </ul>
+				</ul>
+			</ul>
+			<br>
+			<p>2. 又或者，對生成參數強化，比如: 降低隨機性(temperature)，或者建立一些生成的限制(generation_args)，比如: "forced_words"和"bad_word"。</p>
+			<br>
+			
+            <h3>結論</h3>
+            <p>這個專案，展示了如何如何微調一個GPT-2模型，讓它可以回答更專業的問題。以這個問題來說，我們仍需要'術語校對'和'數學嚴謹性強化'，進一步提升回答品質。我認為應該優先修正訓練數據中的技術表答(錯誤 vs 正確的對照樣本)。</p>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 個人作品集. All rights reserved.</p>
+        </div>
+    </footer>
+	
+	<script src="script.js"></script>
+</body>
+</html>
