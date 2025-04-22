@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>混合型分配應用(I):"在保險理賠建模中，從理論到風險定價</title>
+    <link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+	<canvas id="meteorCanvas"></canvas>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="wave-background">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+    <div class="particles" id="particles"></div>
+	
+    <header class="header">
+        <h1 style="text-align: center;">保險理賠建模詳解</h1>
+		<p style="text-align: center";>(本篇涉及數理統計的理論與公式推導，但不會對這些過程多加描述，僅強調做法與結果。)</p>
+    </header>
+
+    <div class="container">
+        <section>
+            <h3>專案背景</h3>
+            <p>在這個專案中，我們將討論右設限(right censor)與混合型分配的機率推導結果，使用Python以Pareto distribution生成模擬資料，進行一連串統計分析與規劃保單的保額。</p>
+            <br>
+			
+            <h3>資料與預設條件</h3>
+            <p>1. Pareto distribution生成模擬資料，10,000筆，並以<strong>隨機變數X表示投保者遭受的損失(單位:萬元)</strong>、且<strong>隨機變數Y為對應的賠償金(單位:萬元)</strong>；</p>
+            <br>
+            <p>2. Pareto distribution的參數alpha = 2與belta = 50，控制此分配的尾巴重量(也就是極端值的多寡)以及最低的損失(也就是損失高於50萬元才會賠償)；</p>
+			<br>
+			<p>3. 參數c = 100(萬元) 表示理賠的上限(右設限)、且d = 5(萬元) 表示自付額；</p>
+			<br>
+			<p>我們可以用以下的混合分配表示這個問題:</p>
+			<br>
+			
+			<figure>
+			<img src="images/p10.png" alt="feature importance" width="600" height="350">
+ 			<figcaption>(圖一) Standard Pareto distribution</figcaption>
+			</figure>
+			<br>
+			<p>Note: 一般來說，投保者遭受的損失大於0 (X > 0)，就會賠償，那就適用Shifted Pareto distribution；但我們在這裡設置一個左截斷(left truncated)，減少小額理賠，進而減少賠償的期望值E(Y)。</p>
+			<br>
+			
+			<h3>估計 Pareto distribution 的參數？(假設我們不知道分配)</h3>
+			<br>
+			<h4>1. Pareto distribution被設計用來描述一筆"尾巴又重又長"的資料，像是意外的損失，平常基本上不會發生，但一發生就會產生很高的極端損失，如下圖:</h4>
+			<br>
+			
+		    <figure>
+			<img src="images/p11.png" alt="feature importance" width="500" height="350">
+ 			<figcaption>(圖二) Empirical PDF</figcaption>
+			</figure>
+			
+			<br>
+			<p>Note: 通常決定用什麼分配我們可以依照經驗決定，也就是"經驗分配(empirical distribution)"；如果真的不知道，可以用histgram(直方圖)畫看看，知道"每一個觀察值發生的機率"，找出有可能的分配。</p>
+			<br>
+
+			<h4>2. 在決定一個(或一些)分配後，我們要去估計它(們)的參數(parameter)，在這裡我們專注討論Pareto(α, β)。</h4>
+			<br>
+
+			<p>對於一組隨機樣本X = {X_1,X_2, …,X_𝑛 }，它的概似函數(Likelihood)為:</p>
+			<br>
+			
+			<figure>
+			<img src="images/p12.png" alt="feature importance" width="500" height="120">
+ 			<figcaption>(圖三) Likelihood of X</figcaption>
+			</figure>
+            <br>
+			
+			<p>取個log，那麼log likelihood 是:</p>
+			<br>
+			
+			<figure>
+			<img src="images/p13.png" alt="feature importance" width="600" height="120">
+ 			<figcaption>(圖四) Log likelihood of X</figcaption>
+			</figure>
+            <br>
+			
+		    <p>我們得到α 和 β的最大概似估計(MLE)為:</p>
+			<br>
+			<figure>
+			<img src="images/p14.png" alt="feature importance" width="500" height="100">
+ 			<figcaption>(圖五) MLE of α and β</figcaption>
+			</figure>
+            <br>
+			
+			<p>最後我們帶入X，得到:</p>
+			<br>
+			<figure>
+			<img src="images/p15.png" alt="feature importance" width="500" height="100">
+ 			<figcaption>(圖六) Estimate of α and β by analytic</figcaption>
+			</figure>
+            <br>
+			
+			<p>Note: 如果問題變成x > 0，而不是x > β (也就是損失只要大於0就會理賠)，那們它會變成shifted Pareto，這時候α和β的mle沒有closed form，沒辦法得到一個解析解，我們就可以用最佳化的方法"最小化負的Log likelihood"，我們同樣得到: </p>
+			<br>
+			<figure>
+			<img src="images/p16.png" alt="feature importance" width="900" height="300">
+ 			<figcaption>(圖七) Estimate of α and β by numeric</figcaption>
+			</figure>
+            <br>
+			<p>值得注意的是，在這裡我們使用standard Pareto，因為belta < min(X_i)，所以要設上界，不然估計量會差很多，這跟一般alpha、belta > 0很不一樣。</p>
+			<br>
+			
+			<h3>確定資料(X)服從我們預測的Pareto(2,50)？</h3>
+			<h4>1. 最簡單的方法是，我們使用QQ plot，看看資料與某個分配接近不接近？如果，點基本上都在線上，就表示X~Pareto(2,50)，如下圖:</h4>
+			<br>
+			<figure>
+			<img src="images/p17.png" alt="feature importance" width="500" height="400">
+ 			<figcaption>(圖八) QQ plot of X and Pareto(2,50)</figcaption>
+			</figure>
+            <br>
+			
+			<h4>2. 使用KS test或Lilifor test這種無母數檢定，但我們這裡是用Boostrap KS test，因為在這裡，"我們假裝不知道真實的 α,β，所以我們用MLE模擬"，如下圖:</h4>
+			<br>
+			<figure>
+			<img src="images/p18.png" alt="feature importance" width="500" height="550">
+ 			<figcaption>(圖九) Boostrap KS test</figcaption>
+			</figure>
+            <br>
+			<p>最後，因為p-value明顯夠大，我們<strong>接受H0: 我們一開始的data 服從一個Pareto(2,50)的分配</strong>。</p>
+			<br>
+			<p>接下來才要進入主題，為了要規劃保險金額，首先我們要算出賠償金額的期望值E(Y)，那我們得要有Y的pdf...</p>
+			<br>
+			
+			<h3>找到賠償金額的期望值E(Y)？</h3>
+			<br>
+			<h4>1. 我們有顧客損失(X)的pdf，但保險給付(Y)的我們不能直接知道，要藉由(圖一)的混合分配推導，其結果如下:</h4>
+			<br>
+			<figure>
+			<img src="images/p19.png" alt="feature importance" width="400" height="200">
+ 			<figcaption>(圖十) Likelihood of Y</figcaption>
+			</figure>
+            <br>
+			
+			
+        </section>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 個人作品集. All rights reserved.</p>
+        </div>
+    </footer>
+	
+	<script src="script.js"></script>
+</body>
+</html>
