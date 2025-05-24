@@ -34,7 +34,7 @@
             <br>
             <p>2. Pareto distribution的參數alpha = 2與belta = 50，控制此分配的尾巴重量(也就是極端值的多寡)以及最低的損失(也就是損失高於50萬元才會賠償)；</p>
 			<br>
-			<p>3. 參數c = 100(萬元) 表示理賠的上限(右設限)、且d = 5(萬元) 表示自付額；</p>
+			<p>3. 參數c = 500(萬元) 表示理賠的上限(右設限)、且d = 5(萬元) 表示自付額；</p>
 			<br>
 			<p>我們可以用以下的混合分配表示這個問題:</p>
 			<br>
@@ -146,6 +146,67 @@
 			</figure>
             <br>
 			
+			<h4>2. 那我們就可以得到賠償金額的期望值E(Y):</h4>
+			<br>
+			<figure>
+			<img src="images/p21.png" alt="feature importance" width="800" height="80">
+ 			<figcaption>(圖十二) Expectation of Y</figcaption>
+			</figure>
+            <br>
+			<p>就像期望值，我們也可以進一步計算標準差，評估賠償金額的範圍。若要決定單純決定保費，可以E(Y)*P(出意外的保單)，如果有其他的成本，也可以加進去，像是:</p>
+			<br>
+			<figure>
+			<img src="images/p22.png" alt="feature importance" width="700" height="80">
+ 			<figcaption>(圖十三) Example of Premium</figcaption>
+			</figure>
+            <br>
+			
+			<p>不過，一般的保單可能會設更多分層，比如更多的損失(X)，會有更多的賠償，而不是只給同一個金額，也就是"分級賠付"或"分層累進賠付"這種，像是:</p>
+			<br>
+			<figure>
+			<img src="images/p23.png" alt="feature importance" width="700" height="300">
+ 			<figcaption>(圖十四) 增加差異化</figcaption>
+			</figure>
+            <br>
+			<p>比如: 當客戶損失越多，k_i就越高(70%->90%->100%之類的)，c_i是損失(X)的百分位數，這些可以從歷史資料決定。當然，我們可以計算相對的Y，將保費差異化。</p>
+			<br>
+			
+			<h3>結論:</h3>
+			<br>
+			<h4>1. 這篇專案其實我主要是想介紹統計學、精算科學與程式實作，目的不是單純算保單，其實也不一定是保險業的理賠建模，換個情境，也可以變成:</h4>
+			<br>
+			
+			<figure>
+			<img src="images/p24.png" alt="feature importance" width="800" height="200">
+ 			<figcaption>(圖十五) 工廠維修成本</figcaption>
+			</figure>
+            <br>
+			
+			<h4>2. 我們也可以思考一建有趣的事，如果賠償上限c從500變成600會怎樣？</h4>
+			<br>
+			<ul>
+			<p>a. 因為保險公司願意承擔更高風險，平均給付E(Y)會提升，除了會提高保費外，好處是可以"覆蓋更大範圍的損失"，增加保障、避免糾紛與增加競爭力；但是極端的損失可能越大(財務波動變大)，比如說: 之前covid-19疫情末期的大爆發。</p>
+			<br>
+			<p>b. 如果賠付上限(c)-> 0，這沒什麼好討論，但如果 c -> inf(也就是沒上限)且自付額(d) = 0，那麼保險公司就要承擔所有極端損失，也就是Y的極限分配就會收斂到X，可以解釋成: 當c沒有限制，這個分配會是Pareto(2,50)，這樣保險公司會有更極端的賠償出現。</p>
+			<br>
+			<p>c. 或者，反過來說，是限制c的混和分配避免這種極端賠償的出現，這就是精算在做的事，因為損失(X)平常不會發生，但發生會產生很大的影響，所以要<strong>在"邊際風險(MC)"與"邊際收益(MB)"之間找出一個賠付上限 c，使得MB = MC</strong>，也就是:</p>
+			<br>
+			
+			<figure>
+			<img src="images/p25.png" alt="feature importance" width="800" height="150">
+ 			<figcaption>(圖十六) 最佳化理賠上限</figcaption>
+			</figure>
+            <br>
+			<h4>我們可以把問題改一下，變成最大化利潤(Profit):</h4>
+			<br>
+			<figure>
+			<img src="images/p26.png" alt="feature importance" width="900" height="80">
+ 			<figcaption>(圖十七) 最佳化最大利潤</figcaption>
+			</figure>
+            <br>
+			<p>也就是: 利潤 = 保費總收入 - 理賠期望值的和 - 額外成本(營運等等，童常是一個定值)；現在，c是一個參數，所以我們可以估計它，就像前面算MLE一樣，但E(Y)可能沒有解析解，所以可以用梯度下降法之類的最佳化方法最佳化 c，直到|MB - MC|<ϵ 。</p>
+			</ul>
+			<br>
 			
         </section>
     </div>
