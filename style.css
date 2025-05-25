@@ -1,25 +1,48 @@
 /* 基本樣式設定 */
 :root {
-    --primary-color: #1a1a1a;
-    --secondary-color: #3498db;
-    --text-color: #ffffff;
-    --background-color: #121212;
-    --card-background: #1e1e1e;
-    --section-padding: 80px 0;
-    --transition-speed: 0.3s;
+    --line-color: rgba(52, 152, 219, 0.05);
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+.flowing-lines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
 }
 
-body {
-    font-family: 'Arial', sans-serif;
-    line-height: 1.6;
-    color: var(--text-color);
-    background-color: var(--background-color);
+.line {
+    position: absolute;
+    background: var(--line-color);
+    animation: flow linear infinite;
+}
+
+.line-1 {
+    width: 150%;
+    height: 1px;
+    top: 20%;
+    transform: rotate(20deg);
+    animation-duration: 20s;
+}
+
+.line-2 {
+    width: 150%;
+    height: 1px;
+    top: 50%;
+    transform: rotate(-15deg);
+    animation-duration: 25s;
+    animation-delay: 5s;
+}
+
+@keyframes flow {
+    from {
+        transform: translateX(-100%) rotate(20deg);
+    }
+    to {
+        transform: translateX(100%) rotate(20deg);
+    }
 }
 
 .container {
@@ -70,14 +93,14 @@ width: 100%; /* 100% 寬度 */
 
 /* 導航欄樣式 */
 .header {
-    background-color: rgba(26, 26, 26, 0.95);
-    padding: 20px 0;
+    background-color: rgba(64, 164, 223, 0.3);;
+    padding: 5px 0;
     position: fixed;
     width: 100%;
     top: 0;
     z-index: 1000;
     transition: transform var(--transition-speed) ease-in-out;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(50,150,200,0.5);
     backdrop-filter: blur(10px);
 }
 
@@ -210,11 +233,14 @@ figcaption {
 .timeline::before {
     content: '';
     position: absolute;
-    left: 90%; /*藍線位置*/
+    left: 90%; /* 調整藍線位置 */
+    top: 0;
     transform: translateX(-50%);
-    width: 2px;
-    height: 120%;
-    background-color: var(--secondary-color);
+    width: 3px; /* 加粗線條 */
+    height: 100%;
+    background-color: #3498db; /* 亮藍色 */
+    z-index: 1; /* 確保在最上層 */
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5); /* 發光效果 */
 }
 
 .timeline-item {
@@ -264,11 +290,12 @@ figcaption {
 .skill-item {
     background: var(--card-background);
     padding: 25px;
-    border-radius: 12px;
+    border-radius: 40px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     transition: transform var(--transition-speed), box-shadow var(--transition-speed);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(10, 200, 200, 0.8);
 }
+
 
 .skill-item:hover {
     transform: translateY(-5px);
@@ -293,9 +320,9 @@ figcaption {
     position: relative;
 }
 
-.skill-progress {
+.skill-progress { /*技能進度條*/
     height: 100%;
-    background: linear-gradient(90deg, var(--secondary-color), #2ecc71);
+    background: linear-gradient(90deg, #3498db, #2ecc71) !important;
     width: 0;
     transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
@@ -356,7 +383,7 @@ figcaption {
 /* 頁尾樣式 */
 .footer {
     background-color: var(--primary-color);
-    color: white;
+    color: blue;
     text-align: center;
     padding: 20px 0;
     margin-top: 40px;
@@ -430,7 +457,7 @@ figcaption {
         margin: 0;
         padding: 20px;
     }
-
+	
     .project-header {
         padding: 15px;
     }
@@ -866,7 +893,7 @@ body::before {
     padding: 20px;
     background: var(--card-background);
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(10, 200, 200, 0.8);
 }
 
 .message-form {
@@ -890,8 +917,8 @@ body::before {
 .form-group textarea {
     padding: 10px;
     border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(10, 200, 200, 0.8);
+    background: rgba(255, 255, 255, 0.1);
     color: var(--text-color);
     font-size: 1em;
     transition: all 0.3s ease;
@@ -907,7 +934,7 @@ body::before {
 .submit-btn {
     padding: 12px 24px;
     background: var(--secondary-color);
-    color: white;
+    color: rgba(10, 200, 200, 1.0);
     border: none;
     border-radius: 6px;
     font-size: 1em;
