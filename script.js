@@ -126,7 +126,7 @@ document.addEventListener('keydown', (e) => {
 
 function createParticles() {
     const particlesContainer = document.getElementById('particles');
-    const particleCount = 50;
+    const particleCount = 10;
 
     for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
@@ -167,13 +167,13 @@ const floatKeyframes = `
 particlesJS("particles-js", {
     particles: {
         number: {
-            value: 250, // 粒子數量
+            value: 100, // 粒子數量
             density: {
                 enable: true,
                 value_area: 800
             }
         },
-        color: { value: "#ffffff" }, // 粒子顏色
+        color: { value: "#5bc0de" }, // 粒子顏色
         shape: {
             type: "star", // 形狀可選：circle, edge, triangle, polygon, star
         },
@@ -188,7 +188,7 @@ particlesJS("particles-js", {
         line_linked: {
             enable: true, // 讓粒子之間連線
             distance: 150,
-            color: "#ffffff",
+            color: "#5bc0de",
             opacity: 0.4,
             width: 1
         },
