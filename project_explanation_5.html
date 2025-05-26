@@ -133,10 +133,10 @@
  			<figcaption>(圖十) Boostrap KS test histgram</figcaption>
 			</figure>
             <br>
-			<p>接下來才要進入主題，為了要規劃保險金額，首先我們要算出賠償金額的期望值E(Y)，那我們得要有Y的pdf...</p>
+			<p>接下來才要進入主題，如何最大化利潤？為了要規劃保險金額，首先我們要算出賠償金額的期望值E(Y)，那我們得要有Y的pdf...</p>
 			<br>
 			
-			<h3>找到賠償金額的期望值E(Y)？</h3>
+			<h3>如何最大化利潤？</h3>
 			<br>
 			<h4>1. 我們有顧客損失(X)的pdf，但保險給付(Y)的我們不能直接知道，要藉由(圖一)的混合分配推導，其結果如下:</h4>
 			<br>
@@ -171,18 +171,7 @@
 			<p>比如: 當客戶損失越多，k_i就越高(70%->90%->100%之類的)，c_i是損失(X)的百分位數，這些可以從歷史資料決定。當然，我們可以計算相對的Y，將保費差異化。</p>
 			<br>
 			
-			<h3>結論:</h3>
-			<br>
-			<h4>1. 這篇專案其實我主要是想介紹統計學、精算科學與程式實作，目的不是單純算保單，其實也不一定是保險業的理賠建模，換個情境，也可以變成:</h4>
-			<br>
-			
-			<figure>
-			<img src="images/p24.png" alt="feature importance" width="800" height="200">
- 			<figcaption>(圖十五) 工廠維修成本</figcaption>
-			</figure>
-            <br>
-			
-			<h4>2. 我們也可以思考一建有趣的事，如果賠償上限c從500變成600會怎樣？</h4>
+			<h4>3. 我們也可以思考一件有趣的事，如果賠償上限c從500變成600會怎樣？</h4>
 			<br>
 			<ul>
 			<p>a. 因為保險公司願意承擔更高風險，平均給付E(Y)會提升，除了會提高保費外，好處是可以"覆蓋更大範圍的損失"，增加保障、避免糾紛與增加競爭力；但是極端的損失可能越大(財務波動變大)，比如說: 之前covid-19疫情末期的大爆發。</p>
@@ -191,29 +180,59 @@
 			<br>
 			<p>c. 或者，反過來說，是限制c的混和分配避免這種極端賠償的出現，這就是精算在做的事，因為損失(X)平常不會發生，但發生會產生很大的影響，所以要<strong>在"邊際風險(MC)"與"邊際收益(MB)"之間找出一個賠付上限 c，使得MB = MC</strong>，也就是:</p>
 			<br>
+			<p>Remark: <strong>邊際(marginal)</strong>就是目標函數對參數的(偏)微分，這裡以MB 與MC 表示。</p>
+			<br>
 			
 			<figure>
 			<img src="images/p25.png" alt="feature importance" width="800" height="150">
- 			<figcaption>(圖十六) 最佳化理賠上限</figcaption>
+ 			<figcaption>(圖十五) 最佳化理賠上限</figcaption>
 			</figure>
             <br>
 			<h4>我們可以把問題改一下，變成最大化利潤(Profit):</h4>
 			<br>
 			<figure>
 			<img src="images/p26.png" alt="feature importance" width="900" height="80">
- 			<figcaption>(圖十七) 最佳化最大利潤</figcaption>
+ 			<figcaption>(圖十六) 最佳化最大利潤</figcaption>
 			</figure>
             <br>
-			<p>也就是: 利潤 = 保費總收入 - 理賠期望值的和 - 額外成本(營運等等，童常是一個定值)；現在，c是一個參數，所以我們可以估計它，就像前面算MLE一樣，但E(Y)可能沒有解析解，所以可以用梯度下降法之類的最佳化方法最佳化 c，直到|MB - MC|<ϵ 。</p>
+			<p>也就是: 利潤 = 保費總收入 - 理賠期望值的和 - 額外成本(營運等等，通常是一個定值)；現在，c是一個參數，所以我們可以估計它，就像前面算MLE一樣，但E(Y)可能沒有解析解，所以可以用梯度下降法之類的最佳化方法最佳化 c，直到|MB - MC|<ϵ 。</p>
 			</ul>
 			<br>
+			
+			<h4>4. 最後，找到最佳的理賠上限c，使得Profit(c) 是最大，就變成一個最佳化問題:</h4>
+			<br>
+			<figure>
+			<img src="images/p27.png" alt="feature importance" width="600" height="400">
+ 			<figcaption>(圖十七) 最佳化理賠上限c</figcaption>
+			</figure>
+            <br>
+			<p>簡單來說就是，要找到最大的利潤Profit(c) ，我要找一個c，使得MB = MC ，目的是上升一點點c，使得利潤上升一點(MB)，同時賠償下降一點(MB)，在這之中做權衡。</p>
+			</ul>
+			<br>
+			
+			<h3>結論:</h3>
+			<br>
+			<h4>這篇專案其實我主要是想介紹統計與程式實作，目的不是單純算保單，其實也不一定是保險業的理賠建模，換個情境，也可以變成:</h4>
+			<br>
+			<figure>
+			<img src="images/p24.png" alt="feature importance" width="800" height="200">
+ 			<figcaption>(圖十八) 工廠維修成本</figcaption>
+			</figure>
+            <br>
+			<p>事實上，使用很多統計學習，大部分的問題就在做最佳化，不論回歸、 分類還是<strong>非監督式學習</strong>或是厲害的神經網絡，這份專案就是想要表達這點。</p>
+			<br>
+			<p>Remark: <strong>非監督式學習</strong>，簡單來說就是，將一筆資料進行"<strong>best representation</strong>"的方法，可分為抽樣、 去噪音(denoise)、 降維、 分群等。</p>
+			<br>
+			
+			
+			
 			
         </section>
     </div>
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 個人作品集. All rights reserved.</p>
+            <p>&copy; 2025 個人作品集. All rights reserved.</p>
         </div>
     </footer>
 	
