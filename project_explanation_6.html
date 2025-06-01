@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>影像辨識: YOLO(You Only Look Once)</title>
+    <link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+	<canvas id="meteorCanvas"></canvas>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="wave-background">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+    <div class="particles" id="particles"></div>
+	
+    <header class="header">
+        <h1 style="text-align: center;">YOLO詳解</h1>
+    </header>
+
+    <div class="container">
+        <section>
+            <h3>專案背景</h3>
+            <p>在這個專案中，我們將嘗試手刻一個簡單的YOLO模型，以生成的1000筆O和X的資料進行訓練，再以另外20筆額外資料進行預測，實現基本的YOLO理論。</p>
+            <br>
+			
+            <h4>1. 生成1000筆O和X，作為訓練資料:</h4>
+			<ul>
+			<p>generate_data 函式:</p>
+			<ul>
+			<p>a. 我們以這個函式生成我們要的資料，每張圖片大小為64x64畫素(pixels)以Uniform(0,1)的隨機值 > 0.5則畫圈(O)，> 0.5則畫叉(X)；</p>
+			</ul>
+			<ul>
+			<p>b. 每張圖都進行隨機進行一點scale，有些大、有些小(也就是高、寬: h、w 會不同)；</p>
+			</ul>
+		    <ul>
+			<p>c. O和X的放置位置隨機擺放，並且圖形隨機旋轉；</p>
+			</ul>
+			<ul>
+			<p>d. 新加入一點隨機偏移，使得O和X的形狀不太一樣。</p>
+			</ul>
+			<p>Note: 因為O和X是Uniform(0,1)隨機指定，所以數量不會一樣，但不會差多少。</p>
+			<br>
+			<p>圈圈的圖長的會像這樣:</p>
+			<figure>
+			<img src="images/p28.png" alt="feature importance" width="400" height="350">
+ 			<figcaption>(圖一) O plot</figcaption>
+			</figure>
+			<br>
+			<p>而叉叉的圖長的會像這樣:</p>
+			<figure>
+			<img src="images/p29.png" alt="feature importance" width="400" height="350">
+ 			<figcaption>(圖二) X plot</figcaption>
+			</figure>
+			<br>
+			</ul>
+			
+            <h4>2. 加載與處理資料，輸出Img與 target:</h4>
+			<ul>
+			<p>class XODataset的 __getitem__ 函式:</p>
+		    <ul>
+			<p>a. 用cv2.IMREAD_GRAYSCALE 讀取單通道圖像，並確保訓練圖片統一大小，在進模型前是 64x64；</p>
+			</ul>
+			<ul>
+			<p>b. 添加channel dim，比如黑白是: [1,width,height]；</p>
+			</ul>
+			<ul>
+			<p>c. 這裡我們要結合png以及相對應的txt文本，txt紀載著該圖片的class_idx、 x_center、 y_center、 width、 height等訊息；</p>
+			</ul>
+			<ul>
+			<p>d. 模型的Target 我們可以假設為class_idx、 x_center、 y_center、 width、 height、 confidence、 label 0、 label 1；</p>
+			</ul>
+		    <ul>
+			<p>e. confidence是該區域有沒有東西的信心度，label 0和 label 1則是 one hot，也就是O = [1,0]、 X = [0,1]；</p>
+			</ul>
+			<br>
+			</ul>
+			
+			<h4>3. 定義模型(TinyYOLO)與分別處理預測框、信心度與分類(forward):</h4>
+			<ul>
+			<p>class TinyYOLO:</p>
+		    <ul>
+			<p>a. 對單通道的inputs做 Normalize，這是為了更有效率的進行最佳化；</p>
+			</ul>
+			<ul>
+			<p>b. 用3個Conv+ReLU+MaxPool 的block 逐步做undersampling；</p>
+			</ul>
+			<ul>
+			<p>c. 最後捲積層(filter)保留8x8，並且通道數為 5 + num_classes ；</p>
+			</ul>
+			<ul>
+            <pre>   也就是:
+			             inputs: [Batch size, 1, 64, 64]，其中1: channel、64: cell， 
+			             outputs: [Batch size , 8, 8, 7]，其中8: cell、7: 7個預測值([x, y, w, h, confidence, class1_prob, class2_prob])。
+			</pre>
+			</ul>
+			
+			<p>forward 函式:</p>
+		    <ul>
+			<p>a. 由CNN 把1 channel變成64 channel，且grid 由undersampling 到 8*8，[B,1,64,64] -> [B,64,8,8]；</p>
+			</ul>
+			<ul>
+			<p>b. 最終預測卷積self.head = nn.Conv2d(64, 5 + num_classes, 1)，使得[B,64,8,8] -> [B,7,8,8]；</p>
+			</ul>
+			<ul>
+			<p>c. 把7個預測值擺到最後， [B,7,8,8] -> [B,8,8,7]；</p>
+			</ul>
+			<ul>
+			<pre>   Note: 
+			 那個self.head(x) 就是一個 1x1的捲積核(filter)，這裡就剛好是: nn.Conv2d(64, 7, kernel_size=1)，大小是: [64,1,1]，
+                         原本[B,64,8,8]有64個channe的feature map、每個feature map都是8x8，用[64,1,1]的filter，取weighting sum變成1個channel，
+                         有7個捲積核，所以outputs變成[B, 7, 8, 8]，然後換順序變成[B, 8, 8, 7]；
+
+			</pre>
+			</ul>
+			<ul>
+		    <p>d. 分別處理: bbox(就是座標[x, y, w, h])、conf(信心度)、class_logits(實數值，做softmax才是機率)；</p>
+			</ul>
+			<ul>
+		    <p>e. 合併bbox、conf以及class_logits。</p>
+			</ul>
+			</ul>
+			<br>
+			
+			<h4>4. 訓練步驟:</h4>
+			<ul>
+			<p>train() 函式:</p>
+		    <ul>
+			<p>a. 將training_data 經由XODataset 整理，並加載它，命名為dataset；</p>
+			</ul>
+			<ul>
+			<p>b. 使用DataLoader 模組，將dataset 洗牌(suffle)，分為16個batch；</p>
+			</ul>
+			<ul>
+			<p>c. 將TinyYOLO 模型以Adam 做最佳化，epoch 為20次(run完一整個dataset為一次)；</p>
+			</ul>
+			</ul>
+			<br>
+			
+			<h4>5. 損失函數:</h4>
+			<ul>
+			<p>yolo_loss 函式:</p>
+		    <ul>
+			<p>a. 這裡我們假設信心度 > 0.5，認為是有物體；</p>
+			</ul>
+			<ul>
+			<p>b. 對於有物體的部分:</p>
+			<ul>
+			<p>I. bbox_loss: 用來計算預測框與真實框的MSE，因為是回歸問題，loss用MSE；</p>
+			</ul>
+			<ul>
+			<p>II. 信心度loss(conf_loss_obj): 用來區分有/無物體，因為是二分類問題，loss用Binary CrossEntropy；</p>
+			</ul>
+			<ul>
+			<p>III. class_loss: 因為是one hot，loss用CrossEntropy。</p>
+			</ul>
+			<p>c. 對於沒有物體的部分:</p>
+			<ul>
+			<p>只有信心度loss考慮沒有物體的部分的loss(conf_loss_noobj)，這是為了得到更好的信心度所做的嘗試。</p>
+			</ul>
+			</ul>
+			<ul>
+			<p>d. 最後，將以上4種loss計算權重和，作為total_loss。</p>
+			<ul>
+			<p>Note: 這裡假設每個網格只有一個目標，如果有多個目標，要對每個target 的loss加起來。</p>
+			</ul>
+			</ul>
+			<br>
+			</ul>
+
+			<h4>6. 對target編碼:</h4>
+			<ul>
+			<p>prepare_targets 函式:</p>
+			<ul>
+			<p>這裡是把[x,y,w,h,confidence,class_0,class_1] 轉成網格 [cx - grid_x, cy - grid_y, w, h,  1.0, class_idx ]的形式，其中cx、 cy表示偏移量，我們就是要最佳化這個。</p>
+			<br>
+			<pre>    比如說:
+			   cx=0.6, cy=0.7, grid_size=8, grid_x=4, grid_y=5,
+                           那麼：[0.6*8-4=0.8, 0.7*8-5=0.6, w, h, 1.0, class...]，並儲存它，訓練就是要最小化它們的loss，
+					       而會用cx - grid_x、cy - grid_y是因為如果要學整張圖，那太難，所以模型只需要學每個 cell 裡相對偏移（0~1 之間)，直到模型收斂，
+					       意思就是: 模型只需要學: "我在這個 cell 裡的框中心要偏移多少？"
+			</pre>
+			</ul>
+			<ul>
+			<p>Note: 這裡後面會變成6個，是因為class_loss的loss用CrossEntropy會自動幫我們做sigmoid，轉成機率，在這裡這樣做比較容易，或者也可以用原本的one hot，
+			   然後loss換成Binary CrossEntropy，但後者是用在多個目標、或多類別同時出現(比如同時有O和X)，因為它可以同時預測兩個類別的高機率。如果同時有O和X在一張圖，還用CrossEntropy，
+			   那模型就被迫只能選其中一個，根本學不到同是存在的情況，這是因為 CrossEntropyLoss 假設每個樣本只能對應一個"正確類別"，所以它會套一個 softmax，強制所有類別機率加總為 1。</p>
+			</ul>
+		    </ul>
+			<br>
+			
+			<h4>7. 以TinyYOLO訓練那1000筆train data，然後我們再生成20筆test data，用在預測上。</h4>
+			<ul>
+			<p>以下是這模型的total loss，看起來訓練滿穩定的，<p/>
+			</ul>
+			<figure>
+			<img src="images/p31.png" alt="feature importance" width="300" height="400">
+ 			<figcaption>(圖三) training loss</figcaption>
+			</figure>
+			<br>
+			
+			<h4>8. 預測訓練結果:</h4>
+			<ul>
+			<p>predict 函式:</p>
+			<ul>
+			<p>同樣的，我們對test data做圖像讀取與前處理，並且解碼與視覺化圖片，我們拿test data的0_3號(第3張是O的意思)圖片預測看看，</p>
+			<br>
+			<figure>
+			<img src="images/p30.png" alt="feature importance" width="700" height="300">
+ 			<figcaption>(圖四) predict plot without NMS</figcaption>
+			</figure>
+			<br>
+			<p>這張預測圖，很明顯就是挑出了一大堆X(紅色)，然後2個O(綠色)，這感覺好像模型不知道在看什麼似的，我們來討論一下可能的原因:</p>
+			<ul>
+			<p>a. 模型信心度 > 0.5，但分類還學不好，那麼它就可能把 O 認成 X，甚至在空白地方也預測 X；</p>
+			</ul>
+			<ul>
+			<p>b. 模型預測太多框，可能是因為背景（沒物體）太弱，背景的懲罰太低，這讓模型變得樂觀，什麼都猜有物體，可以提高 lambda_noobj 的權重，加強背景的懲罰，也就是"背景就該是背景"。
+                  或者加入更多無物體的訓練圖片，但我們先不那麼做；</p>
+			</ul>
+			<ul>
+			<p>c. 分類的 Loss 不夠敏感，比如CrossEntropy，只輸出一個類別 index（0 是 O，1 是 X）。但這是在一張圖同時出現 O 和 X 才會有的問題，所以不是這原因；</p>
+			</ul>
+		    <ul>
+			<p>d. 沒加上 NMS（Non-Maximum Suppression），使得即使模型在很多網格預測出高信心的框，但他們其實可能指向同一個物體。</p>
+			</ul>
+			<p>這樣看裡來，我們先調整提高 lambda_noobj 的權重和加入NMS應該比重新訓練容易，接下來先了解一下什麼是NMS？</p>
+			</ul>
+			<br>
+			
+			<h4>9. 加入NMS（Non-Maximum Suppression）:</h4>
+			<ul>
+			<p>a. NMS的功能是: 目標檢測時，移除重複或重疊過多的框（bounding boxes），只保留最有可能是真實物體的那一個。</p>
+			<ul>
+			<p>這是因為，模型會在每個網格或 anchor 上預測一個框 + 類別 + 信心度，很多框會對同一個物體做預測，尤其是當物體比較大或居中時。結果造成"一個物體有很多相似的框"，所以要靠 NMS 來"保留一個最好的"。</p>
+			<p>Note: <strong>NMS是用在"預測時"，不是用在"訓練時"</strong>，因為訓練時就是要讓模型找到更多可能有東西的地方(這樣才容易學習到什麼是物體、什麼是背景)，太早過濾掉反而什麼都學不到；但預測時這會導致過於雜亂，所以從多個重疊預測中保留最有信心的一個，避免重複預測。</p>
+			</ul>
+			<br>
+			<p>b. NMS的步驟:</p>
+			<ul>
+			<p>假設現在我有一堆預測框，每個預測框都有: 座標（x, y, w, h）、信心度（confidence）、類別...</p>
+			<ul>
+			<p>I. 篩掉低信心的框: 先將信心度低於某個門檻值（例如 0.3）的預測全部移除，</p>
+			<p>II. 排序: 對剩下的框按信心度由高到低排序。</p>
+			<p>III. 選最強、刪重疊，重複以下step 直到沒有框:</p>
+			<ul>
+			<p>step1. 選出信心度最高的框 A，加到結果中，</p>
+			<p>step2. 對其他框 B，計算它們和 A 的 IoU（交集面積/聯集面積），</p>
+			<p>step3. 如果 B 的 IoU > 門檻值（例如 0.5），則"認為 B 是重疊的重複框"，就刪掉。</p>
+			<p>Note: IoU =（交集面積/聯集面積），用來判斷兩個框的重疊程度，IoU越大，這兩個框越近，NMS 就用它來判斷"是否為重複框"。</p>
+			</ul>
+			</ul>
+			<p>c. 加入NMS的結果，同樣以0_3號的test data做預測:</p>
+			<br>
+			<figure>
+			<img src="images/p32.png" alt="feature importance" width="700" height="300">
+ 			<figcaption>(圖五) predict plot with NMS</figcaption>
+			</figure>
+			<br>
+			<p>這結果乾淨多了，雖然還有3個預測為X的錯誤框，但也成功框到正確的框，我們印出數值結果來看看，</p>
+			<br>
+			<figure>
+			<img src="images/p33.png" alt="feature importance" width="800" height="100">
+ 			<figcaption>(圖六) predict result with NMS</figcaption>
+			</figure>
+			<br>
+			<p>所以三個錯誤框信心度是0.62，和正確框的0.63也差不多，那我們提高 lambda_noobj 的權重試試，其實重點不是提高正確框的信心度，而是降低錯誤框信心度，這是因為比起前者，後者更容易達成。</p>
+			<p>那我將lambda_noobj 由0.1調到0.3，lambda_cls(分類O和X的loss的權重) 由2.0調到3.0，得到以下結果:</p>
+			<br>
+			<figure>
+			<img src="images/p34.png" alt="feature importance" width="700" height="300">
+ 			<figcaption>(圖七) predict plot with NMS and lambda_noobj = 0.3</figcaption>
+			</figure>
+			<br>
+			<p>同時輸出數值結果:</p>
+			<br>
+			<figure>
+			<img src="images/p35.png" alt="feature importance" width="800" height="60">
+ 			<figcaption>(圖八) predict result with NMS and lambda_noobj = 0.3</figcaption>
+			</figure>
+			<br>
+			</ul>
+			<p>但是，為了能讓模型generalize到所有test data，單看 loss 或單張圖的預測結果是不夠的，因此我們需要量化模型在所有test data上的泛化能力，這就是為什麼我們要用:</p>
+			<ul>
+			<p>a. Precision: 預測為1的結果中有多少是真的是1的比例；</p>
+			<p>b. Recall: 所有真正為1的，你也把它們抓出來的比例；</p>
+			<p>c. F1 Score: Precision與Recall的調和平均數(調和平均數: 這是用在不同基準/單位下，所使用的平均數)；</p>
+			<p>d. mAP (mean Average Precision): 在不同 IoU 門檻下，計算每類別的平均 precision，這是最常用的偵測指標。</p>
+			</ul>
+			<p>像我們這裡，很多預測框，模型抓到很多東西，但很多是錯的，代表Recall高但是Precision低；而Precision高但是Recall低則表示模型很保守，只預測最有把握的，但很多漏抓；F1 Score和 mAP則兼顧兩者，用於比較不同模型或 loss 組合的泛化能力。</p>
+			<p>因此，接下來可以:</p>
+			<ul>
+			<p>a. 寫個 evaluate(model, test_data) 函式:</p>
+			<ul>
+			<p>I. 每張圖跑 predict() → NMS → 對比 ground truth。</p>
+            <p>II. 計算 TP/FP/FN → precision'、recall、F1以及mAP。</p>
+			</ul>
+			<p>b. 使用 IoU ≥ 0.5 當作正確偵測的標準;</p>
+			<p>c. 如果之後每張圖不只一種 → 計算每個類別的 precision/recall，並取平均，計算macro average(每一類的 Precision/Recall 取平均)或weighted average(加權平均，用在如果類別分布不平衡)。</p>
+			</ul>
+			</ul>
+			</ul>
+			
+			
+        </section>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 個人作品集. All rights reserved.</p>
+        </div>
+    </footer>
+	
+	<script src="script.js"></script>
+</body>
+</html>
