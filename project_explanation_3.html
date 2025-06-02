@@ -47,46 +47,93 @@
 			
 			<h3>模型建立</h3>
 			<br>
-			<h4>以下是fine-tune的步驟:</h4>
+			<h4>以下是本篇fine-tune的重要步驟:</h4>
 			<br>
             <ul>
-                <li>1. 保存與加載數據(json)，</li>
+                <li>1. 句子前處理(分為text、 instruction、output)，全文、問句、答句，</li>
 				<br>
-				<li>2. 訓練集和測試集進行tokenization，</li>
+				<li>2. 對train data 和test data 進行tokenization 以及dropout(去掉一點神經元)，</li>
                 <br>
-				<li>3. 檢查模型設置是否ok? 例如: feedforward、快速檢驗配置，並進行快速驗證，顯示結果；如果快速驗證loss很高：檢查tokenization後的樣本，</li>
+				<ul>
+				<li>Remark: Tokenization 的目的:</li>
 				<br>
-				<li>4. 確認cuda(GPU)，</li>
+				<ul>
+				<li>a. 文本 -> 數字<li>
 				<br>
-				<li>5. 確認test data的loss，</li>
+				<li>b. 統一長度: 填充(pad)和截斷(Truncate)<li>
 				<br>
-				<li>6. 設置正式訓練的參數(training_args)，</li>
+				<li>c. 保留結構: 區分問題和答案<li>
 				<br>
-				<li>7. 創建Trainer，訓練完整數據集，開始訓練，</li>
+				<li>d. 生成標籤	為模型訓練準備target<li>
 				<br>
-				<li>8. 保存模型，</li>
+				</ul>
+				</ul>
 				<br>
-				<li>9. 觀察eval_loss，繪製loss曲線，</li>
+				<li>3. 在原本的GPT2 模型中，我們另外加入Masked Self-Attention,</li>
 				<br>
-				<li>10. 測試模型生成。</li>
+				<li>4. 在原本的GPT2 模型中PositionEncoding，變得也可學習，同時加入殘差連接(Residual Connections)，</li>
+				<br>
+				<li>5. 在原本的GPT2 模型的loss ，計算模型預測 (logits) 與真實標籤 (labels) 的差異(CrossEntropyLoss)，如果要做蒸餾，loss 也加在這，</li>
+				<br>
+				<li>6. 修改後的GPT2我們叫做<strong>EnhancedGPT2</strong>，</li>
+				<br>
+				<li>7. 分層學習率，</li>
+				<br>
+				<li>8. 分層梯度裁減(gradient clipping)，這是為了防止梯度爆炸，通常是對<strong>一層的所有參數</strong>的梯度進行 clip_grad_norm_，</li>
+				<br>
+				<li>9. 混和精度訓練(Mixed Precision Training)，簡單說，就是同時使用 float16 和 float32 精度進行訓練，float16 加速運算與節省 GPU 記憶體；float32則保留關鍵參數（比如梯度累積、損失）為保穩定性，</li>
+				<br>
+				<li>10. 計算在test data上的困惑度(perplexity，PPL)，PPL = exp(CrossEntropyLoss)，就是指模型的回答有多肯定，越小越肯定，通常不超過10，</li>
+                <br>
+				<ul>
+				<li>Remark: perplexity</li>
+				<br>
+				<ul>
+				<li>a. 只能月在NLP上，不能用在回歸或分類問題，<li>
+				<br>
+				<li>b. 也可以用在early stopping：當validation data的 PPL 開始上升，代表模型overfit，<li>
+				<br>
+				<li>c. PPL"整句回答的可信度"，用在自回歸模型(每一步都在預測下一個字)才有用，像BERT那種預測空格的，用PPL 就容易低估或高估，因為它不是生成完整的一句話，而是填空，每次只預測少量被 mask 的詞，而loss 和 perplexity 只代表模型"對填空的預測能力"，而非整體句子建模能力。<li>
+				<br>
+				</ul>
+				</ul>
+				<br>
+				<br>
+				<li>11. 繪製attention plot，</li>
+				<br>
+				<li>12. 訓練前快速驗證: 先用1個epoch和少量data檢查，</li>
+				<br>
+				<li>13. 最終訓練，</li>
+				<br>
+				<li>14. 查看訓練日誌，評估結果，以及繪製loss plot，</li>
+				<br>
+				<li>15. 測試輸出。</li>
 				<br>
             </ul>
             <br>
-			
+			<br>
+			<p>Note: 以下是常見的transformer 的名詞解釋與結構，</p>
+			<figure>
+			<img src="images/p36.png" alt="feature importance" width="1000" height="500">
+ 			<figcaption>(圖一) 基本transformer 的解釋與結構</figcaption>
+			</figure>
+			<br>
+			<p><strong>Remark</strong>: 看起來步驟很多，但LLM 就只保留input_ids(文字->數字，像是[8241,2061,318,...])、 attention_mask(判斷哪些Position是有用的，像是[1,1,0,...]，避免關注到padding的部分)、 labels(通常跟跟input_ids差不多) 來訓練模型，原本的instruction、 output 那些只是用來形成它們，結束後沒必要保留。整體來說就是: 文字 -> 數字 -> 訓練模型 -> 數字 -> 文字。</p>
+			<br>
             <h3>模型評估</h3>
             <p>我進行10個epochs，以下是train與test的loss，</p>
 			<br>
 			
 			<figure>
 			<img src="images/p8.png" alt="Cross Entropy Loss" width="450" height="300">
- 			<figcaption>Cross Entropy Loss</figcaption>
+ 			<figcaption>(圖二) Cross Entropy Loss</figcaption>
 			</figure>
 			<br>
 			
 			<h4>解釋:</h4>
 			<br>
 			<ul>
-			<li>這個 Cross Entropy Loss 可以知道模型的loss收斂是平穩地下降，但6之後下降速度變慢，8之後loss有一點點上升，並且有輕微的overfit，這點從train和test的Gap的差異就看得出來，以平坦程度來看，loss收斂也不完全，epoch應該可以再多。</li>
+			<li>這個 Cross Entropy Loss 可以知道模型的loss收斂是平穩地下降，但6之後下降速度變慢，8之後loss有一點點上升，並且有輕微的overfit，這點從train和test的Gap的差異就看得出來，以平坦程度來看，loss收斂也不完全，epoch應該可以再多，我想至少也要30以上。</li>
 			</ul>
             <br>
 			
@@ -171,7 +218,7 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 個人作品集. All rights reserved.</p>
+            <p>&copy; 2025 個人作品集. All rights reserved.</p>
         </div>
     </footer>
 	
