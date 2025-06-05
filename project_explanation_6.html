@@ -27,6 +27,25 @@
             <h3>專案背景</h3>
             <p>在這個專案中，我們將嘗試手刻一個簡單的YOLO模型，以生成的1000筆O和X的資料進行訓練，再以另外20筆額外資料進行預測，實現基本的YOLO理論。</p>
             <br>
+			<p>我們先來看一些成品，這是我用yolov3執行的結果:</p>
+			<br>
+			
+			<div style="display: flex; gap: 20px;">
+ 			 <figure>
+   			 <img src="images/p38.jpg" alt="feature importance" width="500" height="350">
+  			  <figcaption>(圖一) Example1</figcaption>
+ 			 </figure>
+
+  			<figure>
+    			<img src="images/p37.jpg" alt="feature importance" width="500" height="350">
+   			 <figcaption>(圖二) Example2</figcaption>
+ 			 </figure>
+			</div>
+			<br>
+			<p>這就是YOLO 的效果，目的在於畫出一個框框住一個東西，並且知道那東西是什麼？ 而物件名稱旁邊的機率就是"信心度(這裡有東西的機率)"以及"類別的機率(是什麼東西的機率)"兩者的相乘；以外我們也要畫出這些框框，因此我們要預測框框的中心點偏移量(x,y)和邊界偏移量(w,h)，更新錨框(anchor，預設框)的位置。所以是一個分類(信心度、類別機率)與回歸(x,y,w,h)的問題。</p>
+			<br>
+			<p>這樣看其實沒什麼好講的，描述理論又過於枯燥乏味，那我們嘗試模擬一個YOLO，簡單實現它的理論。</p>
+			<br>
 			
             <h4>1. 生成1000筆O和X，作為訓練資料:</h4>
 			<ul>
