@@ -324,6 +324,47 @@
 			</ul>
 			</ul>
 			
+			<h4>10. 評估模型的預測能力:</h4>
+			<ul>
+			<p>在這環節中，混淆矩陣(confusion matrix)能告訴我們分類的能力，就像之前討論分類問題時一樣，但我們現在不是只有分類O/X，還要考慮應該要"寧可框錯，也不放過"還是"寧可放過，也不框錯"? 這就是Recall和Precision。 </p>
+			</ul>
+			<br>
+			<figure>
+			<img src="images/p39.png" alt="feature importance" width="900" height="500">
+ 			<figcaption>(圖九) Precision-Recall curve</figcaption>
+			</figure>
+			<br>
+			<p>就像先前看到的ROC curve，我們希望在0.5以上，表示具有分類能力，低於0.5表示O和X會搞混，因此我們可以知道這模型表現很差，因此需要train the model。</p>
+			<br>
+			<p>圖九是由每個test data畫出來的階梯圖(這裡增加到100筆)，代表在每個confidence，recall和precision是多少? </p>
+			<br>
+			<ul>
+			<ul>
+			<p>1. recall: 不要漏掉任何一個 X / O，那在乎recall;</p>
+			<ul>
+			<p>比如: 圖片中所有的 X 和 O 都要有框出來，不論分類準不準(也就是不可以漏抓，錯一點也沒關係)。</p>
+			</ul>
+			</ul>
+			<ul>
+			<p>2. precision: 只要預測出來就要正確，，那在乎precision。</p>
+			<ul>
+			<p>比如: 模型預測了一個結果（畫了一個框、給出一個分類），那這個結果就 應該是正確的，不容許亂猜(也就是可以漏抓，但不能錯)。</p>
+			</ul>
+			</ul>
+			</ul>
+			<br>
+			<p>所以，如果我要兼顧recall和precision，那挑選最近(1,1)的位置的那個confidence是最好的，但這張圖我沒標示confidence，可以用F1的圖去找出有最高F1的confidence。</p>
+			<br>
+			<figure>
+			<img src="images/p40.png" alt="feature importance" width="900" height="500">
+ 			<figcaption>(圖十) F1 vs confidence</figcaption>
+			</figure>
+			<br>
+			<p>像這裡，我們得把confidence 的門檻弄得非常低才能抓到目標，表示X/O都被當背景，這也是一種underfit 的表現。這種PR curve 表示，模型對大部分樣本很沒信心，
+			   recall上不去表示沒學到什麼有用的特徵，precision 掉得快表示加進來的預測是錯的比較多，高confidence部分能做對幾個預測(所以一開始 precision = 0.8)，但一旦放寬confidence門檻(加入低的confidence)，
+			   precision 會急劇下降，每一階梯代表模型預測框的一個群組被納入計算，然後 precision 被拉低。</p>
+			<br>
+			<p>接下來我可能考慮生成更大的圖片，比如128x128，並且增加resize的比例，因為這64x64裡面的X/O有些甚至才2x2、3x3，這麼小的畫素並不適合YOLO，也不像一個完整的圖案，而且resize放大後不要超出邊界，這樣模型訓練也會更簡單。</p>
 			
         </section>
     </div>
