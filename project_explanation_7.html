@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIoT</title>
+    <link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+	<canvas id="meteorCanvas"></canvas>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="wave-background">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+    <div class="particles" id="particles"></div>
+	
+    <header class="header">
+        <h1 style="text-align: center;">AIoT 模擬"智慧洗碗機"詳解</h1>
+    </header>
+
+    <div class="container">
+        <section>
+            <h3>專案背景</h3>
+            <p>在這個專案中，我們將嘗試:</p>
+			<ul>
+			<p>1. 以軟體模擬智慧洗碗機，以基本的IoT，為我們偵測水量異常、水電用量、水電成本等等，並且當洗碗精不夠，可以從另一個機器(雲端)適時補充洗碗精；</p>
+			<p>2. 再用偵測資料進行異常預測，以達到AIoT的精神。</p>
+			</ul>
+            <br>
+			<p>我們先來看一下我們的目標:</p>
+			<br>
+			
+ 			 <figure>
+   			 <img src="images/p46.png" alt="feature importance" width="900" height="550">
+  			  <figcaption>(圖一) 智慧洗碗機功能  (本圖來自我以前的上課資料，非我所做)</figcaption>
+ 			 </figure>
+			 
+			<br>
+			<p>那我們先看看這個IoT基本架構:</p>
+			
+			 <figure>
+   			 <img src="images/p47.png" alt="feature importance" width="900" height="550">
+  			  <figcaption>(圖二) IoT基本架構</figcaption>
+ 			 </figure>
+			<br>
+			<p>這裡做一點名詞解釋:</p>
+			<ul>
+			<h4>1. 通訊協定:</h4>
+			<ul>
+			<p>a. MQTT: 從發送者(發布)將資料傳給接收者(訂閱)，在這裡就是把"sensor_simulator.py(感測器)"的水電資料傳給"edge_processor.py(邊緣設備)"，進行異常檢測與更新資料庫；</p>
+			<p>b. API: 當洗碗精不夠(決策)，那就告知雲端的訂購服務(decision_engine.py -> order_api.py)；</p>
+			<p>c. HTTP: Flask 實現雲端伺服器，接收 POST 請求， 接收決策引擎的補貨請求，更新資料庫庫存(order_api.py)。</p>
+			<p>Remark: MOTT 和 HTTP 類似，就只是一個適合Sensor -> 邊緣設備，另一個適合邊緣設備 -> 雲端決策。</p>
+			</ul>
+			<h4>2. 硬體介面:</h4>
+			<ul>
+			<p>a. GPIO: 控制輸入輸出的開關，在這裡就是樹莓派連接繼電器（控制水閥的開關）或按鈕；</p>
+			<p>b. I2C: 連接高精度的Sensor，例如:溫度感測器SHT30；</p>
+			<p>c. UART: 也是控制硬體，但用在更複雜的指令交互，而GPIO 只能簡單啟/停，無法調節流量或讀取閥門狀態，比如:設定水閥門開的比例 50%、確認當前開的比例（如 "FLOW_SET:50%"）；這裡我們以軟體模擬，以MQTT代替。</p>
+			</ul>
+			<h4>3. 數據處理:</h4>
+			<ul>
+			<p>a. Isolation Forest: 用於找出一筆data的異常值，跟K-Means類似，同樣是非監督式學習，只是這是用BST(二元搜尋樹)，高維度下筆KNN容易計算，適用在樹梅派這種邊緣設備，這裡用來檢測異常用水 (edge_processor.py)；</p>
+			<p>b. SQLite: 本地數據儲存，不用伺服器，這裡用來記錄清潔劑庫存 (inventory.db)；</p>
+			<p>c. Pandas: 資料存取與分析，這裡用來將感測器數據暫存 (sensor_data.csv)；</p>
+			</ul>
+			<h4>4. 雲端與架構:</h4>
+			<ul>
+			<p>a. Edge Computing(邊緣運算): 在原始數據附近先處理，不用等上傳雲端再處理，減少雲端計算量，比如: 樹莓派運行異常檢測；</p>
+			<p>b. Flask: Python的Web 框架，快速構建REST API ，這裡用來模擬雲端訂購服務 (order_api.py)；</p>
+			<p>c. Contamination (Isolation Forest的污染參數): 預測數據集中異常值的比例，設定為 0.1 表示預測 10% 異常。</p>
+			</ul>
+			<h4>5. 感測器與執行器:</h4>
+			<ul>
+			<p>a. ；</p>
+			<p>b. ；</p>
+			<p>c. 。</p>
+			</ul>
+			<h4>6. 其他可能用到:</h4>
+			<ul>
+			<p>a. ；</p>
+			<p>b. ；</p>
+			<p>c. 。</p>
+			</ul>
+			</ul>
+			<br>
+			
+            <h3>模擬步驟</h3>
+			<ul>
+			<h4>以下是硬體與軟體的對應:</h4>
+			<ul>
+			<p>1. 感測器（水流/用電) <-> 1_sensor_simulator-checkpoint.py:</p>
+			<ul>
+			<p>功能: 即時處理感測器數據、本地決策（如異常檢測）和與雲端通訊。</p>
+			</ul>
+			<p>2. 樹莓派（邊緣裝置）<-> 2_edge_processor-checkpoint.py:</p>
+			<ul>
+			<p>功能: 模擬硬體感測器發送數據，實際情況會由樹莓派透過 GPIO 或 I2C 讀取。</p>
+			</ul>
+			<p>3. 雲端伺服器 <-> 3_cloud_simulator.py + 5_order_api.py:</p>
+			<ul>
+			<p>功能: 模擬雲端服務（如庫存管理、訂購 API)。</p>
+			</ul>
+			<p>4. 決策引擎（自動化) <-> 4_decision_engine.py:</p>
+			<ul>
+			<p>功能: 可運行在樹莓派或雲端，模擬中獨立執行。</p>
+			</ul>
+			</ul>
+			<h4>每個.py 的介紹:</h4>
+			<ul>
+			<p>1. 1_sensor_simulator-checkpoint.py:</p>
+			<ul>
+			<p>a. 模擬感測器數據生成與發送(因為我沒有這種洗碗機與感測器，所以我們進行模擬)，</p>
+			<p>b. 5 秒生成隨機的 水流 (water_flow) 和 用電量 (power_usage) 數據，</p>
+			<p>c. MQTT 將數據發送到主題 dishwasher/sensor（模擬感測器透過無線/有線傳輸發送數據），</p>
+			<p>d. 使用 paho.mqtt 庫實現 MQTT 客戶端，且數據格式為 JSON，包含時間標記（timestamp）。</p>
+			</ul>
+			<p>2. 2_edge_processor-checkpoint.py:</p>
+			<ul>
+			<p>a. 邊緣數據處理與本地決策(模擬樹莓派（邊緣裝置）的運算)，</p>
+            <p>b. 將感測器給的數據保存到 sensor_data.csv（模擬本地暫存），</p>
+			<p>c. 每次處理數據時，從 SQLite 資料庫 (inventory.db) 扣除 50ml 清潔劑（模擬洗碗機消耗）->  使用 sklearn 實現輕量級異常檢測（IsolationForest），也就是邊緣AI，</p>
+            <p>d. 使用 IsolationForest 機器學習模型檢測異常水流（若最近 3 筆數據中有異常，觸發警報）->  SQLite 實現本地庫存管理（無需雲端），</p>
+			</ul>
+			<p>3. 3_cloud_simulator.py</p>
+			<ul>
+			<p>a. 模擬雲端服務的基本框架(雲端API化簡版)，</p>
+			<p>b. 提供一個 /order 的 HTTP API 端點（模擬供應商訂購系統）-> 使用 Flask 框架建立輕量級 Web 服務，</p>
+			<p>c. 初始化資料庫表格 inventory（實際業務的邏輯在 5_order_api.py 實現）-> 但此檔案僅是框架，主要邏輯由 5_order_api.py 補齊。</p>
+			</ul>
+			<p>4. 4_decision_engine.py</p>
+			<ul>
+			<p>a. 自動化決策與庫存管理(中央控制邏輯，但是這也可運行在邊緣或雲端)，</p>
+			<p>b. 庫存監控: 每 5 秒檢查洗碗精庫存（從 inventory.db 讀取），</p>
+			<p>c. 庫存低於30ml：觸發緊急關機（模擬硬體保護機制），</p>
+			<p>d. 庫存低於300ml：自動發起補貨訂單（呼叫API: http://localhost:5000/order） -> 使用 requests 庫呼叫雲端 API，</p>
+			<p>e. 補貨邏輯: 成功訂購後，更新本地庫存（上限 1000ml）-> 直接操作 SQLite 資料庫（模擬邊緣與雲端數據同步）。</p>
+			</ul>
+			<p>5. 5_order_api.py</p>
+			<ul>
+			<p>a. 完整的雲端訂購服務(補齊 3_cloud_simulator.py 的業務邏輯)，</p>
+			<p>b. 庫存更新: 接收訂單請求後，增加洗碗精庫存（不超過 1000ml），</p>
+			<p>c. 訂單記錄: 將每次補貨記錄到 orders 表格（含時間標記、狀態），</p>
+			<p>d. 錯誤處理: 若訂單失敗，記錄錯誤原因到資料庫 -> inventory.db 被多個元件共享(資料庫共用)。</p>
+			<p>Remark: 完整的 REST API 實現（Flask + SQLite），並且資料庫包含兩個表格：inventory（即時庫存）和 orders（歷史紀錄）。</p>
+			<p>Note: 模擬 vs. 真實系統 -> 真實系統中，感測器和邊緣裝置會透過 GPIO/I2C 通訊，雲端服務可能改用 AWS IoT Core 等平台。</p>
+			</ul>
+			</ul>
+			<br>
+			<p>這麼多字看了很煩，所以我畫了一個圖解釋:</p>
+			
+			 <figure>
+   			 <img src="images/p48.png" alt="feature importance" width="900" height="200">
+  			  <figcaption>(圖三) 每個.py的關係</figcaption>
+ 			 </figure>
+			<br>
+			</ul>
+			
+			<h3>模擬結果</h3>
+			<p>以上我們知道有很多.py 檔，因此可以使用ipynb 在每一個cell 裡執行，這樣也好debug...，以下是在終端執行的結果:</p>
+			
+			 <figure>
+   			 <img src="images/p49.png" alt="feature importance" width="1100" height="500">
+  			  <figcaption>(圖四) 監控每次洗碗機的各項消耗與成本</figcaption>
+ 			 </figure>
+			<br>
+			
+			<figure>
+   			 <img src="images/p50.png" alt="feature importance" width="1100" height="500">
+  			  <figcaption>(圖五) 補貨紀錄</figcaption>
+ 			 </figure>
+			<br>
+			
+			<p>事實上我們有將執行結果儲存在sensor_data.csv，可以執行6_visualization.py 繪圖:</p>
+			
+			<figure>
+   			 <img src="images/p51.png" alt="feature importance" width="1100" height="500">
+  			  <figcaption>(圖六) 用水量、用電量、總成本以及異常用水量的line plot</figcaption>
+ 			 </figure>
+			<br>
+			
+			<p>藉由一些警報紀錄，比如: 異常用水量的資料，我們可以用一個Prohet 或LSTM model，分析之前水流數據與警報的關聯性，預測未來可能發生異常的時間點。如果有多種感測器（如振動、溫度），可用 因果推論模型（dowhy）找出警報的潛在原因。</p>
+            <br>
+			
+            <h3>結論</h3>
+			<p>目前為止，我們以軟體模擬一個基本的AIoT架構:</p>
+			<ul>
+			<p>1. 將模擬的用水量、用電量以MQTT 傳輸到邊緣設備 -> 軟體模擬硬體感測，做到協議<strong>標準化</strong>，</p>
+			<p>2. 在那裡進行異常值偵測與扣減洗碗精的庫存，-> 邊緣 AI 與輕量級資料庫（SQLite），</p>
+			<p>3. 然後決策引擎進行自動化庫存管理（低庫存預警、緊急關機、動態訂購觸發）-> 分級決策邏輯 + REST API 整合，</p>
+			<p>4. 最後，雲端服務進行訂單處理、庫存更新、歷史紀錄儲存 -> Flask 框架 + <strong>交易資料庫操作</strong>(保證資料可靠且一致)。</p>
+			<p>Remark:</p>
+			<ul>
+			<p>1. <strong>標準化</strong>指的是<strong>統一數據傳輸的格式與規則</strong>，讓不同模組（感測器、邊緣設備、雲端）之間能無縫溝通，比如: 當我今天有新的特徵-溫度，那我只需要增加欄位就好，不影響既有系統；換了一個設備，新設備只需符合 MQTT + JSON 格式即可；有需要和第三方系統整合，直接串接標準 API（如雲端物流服務）。這樣可以避免一堆麻煩，比如: 設計新的通訊邏輯、換個機器就要重寫程式碼、客製化對接第三方系統(成本高)。</p>
+			<p>2. 交易(也有人叫事務，transaction)，交易資料庫，簡單講就是，有好幾個資料庫一起操作，要嘛一起生效，要嘛一起撤銷(事務回滾)，不會只有某部分生效的情況，例如：訂購清潔劑時，若「庫存更新成功」但「訂單紀錄失敗」，沒有事務回滾會導致庫存虛增。</p>
+			</ul>
+			</ul>
+			<br>
+			<p>根據圖一的架構，其實也還有好幾樣沒有實現，像是以下紅色mark:</p>
+			 <br>
+			<figure>
+   			 <img src="images/p52.png" alt="feature importance" width="900" height="200">
+  			  <figcaption>(圖七) 缺少的架構</figcaption>
+ 			 </figure>
+			<br>
+			
+        </section>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 個人作品集. All rights reserved.</p>
+        </div>
+    </footer>
+	
+	<script src="script.js"></script>
+</body>
+</html>
